@@ -36,6 +36,21 @@
         chartParsingStatusText: ''
     },
     methods: {
+
+        /**
+         * Removes the last row of the dataset. The last row needs to be remove, as it is blank.
+         * @param {Object} rows
+         */
+        removeTail(rows) {
+            rows.pop();
+/*            for (let i = 0; i < rows.length; i++) {
+
+                rows[i] = rows[i].slice(0, -1);
+
+            };*/
+            return rows;
+        },
+
         /**
          * Displays the loading status
          */
@@ -99,7 +114,7 @@
                             strNum = strNum.concat(`,`);
                         } else {
                             strNum = strNum.concat(`,${(parseFloat(rows[rowNum].split(",")[commaIndices[i]]) / parseFloat(rows[rowNum].split(",")[commaIndices[i] + 1])).toFixed(5)}`);
-                        }          
+                        }
                     };
                     rows[rowNum] = rows[rowNum].concat(strNum);
                 }
@@ -124,7 +139,7 @@
                     // Removes the matched non-county data from the CSV array
                     rows.splice(rowIndex, 1);
                     // Removes the item from the blacklist, assuming that items key this list
-                    if (thisKey !== undefined){
+                    if (thisKey !== undefined) {
                     }
                 }
             };
@@ -160,14 +175,14 @@
             if (this.originalCsv === undefined) {
                 console.log("Internal Error: createNewCsv Failed to load");
                 return;
-            }     
+            }
 
             // Display the loading status
             this.chartParsingStatusDisplayToggle();
             this.chartLoadingText();
 
             this.fileReader.onload = (csvToRead) => {
-        
+
                 // get the content of the original csv that the user selected
                 let contents = csvToRead.target.result;
 
@@ -177,14 +192,15 @@
                 // Remove the second row of the CSV
                 rows.splice(1, 1);
 
-                // Removes the last the last item in the array
-                //rows = rows.pop();
-
                 // Removes the U.S from the dataset
                 this.removeUSTotal(rows);
 
+                // Removes the last the last item in the array
+                rows = this.removeTail(rows);
+
+
                 // Adds ratio columns to the dataset
-                this.calculatePercentage(rows)
+                this.calculatePercentage(rows);
 
                 // Get the year of the file
                 this.year = rows[2].split(",")[5];
@@ -197,7 +213,7 @@
                 // update the loading status
                 this.chartLoadingText();
             }
-            this.fileReader.readAsBinaryString(this.originalCsv); 
+            this.fileReader.readAsBinaryString(this.originalCsv);
         },
         /**
         * This function is called by the html when selecting a year. This function then populates the originalCsv and alteredCsv by calling the getSelectedCsv and createNewCsv functions
@@ -242,43 +258,20 @@
                 method: 'POST',
                 body: this.formData
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data["HashCodeMatch"]) {
-                    this.hashCodeMatch = true
-                } else if (data["FileYearMatch"]) {
-                    this.fileYearMatch = true
-                } else if (data["UploadSuccessful"]) {
-                    this.uploadSuccess = true
-                } else {
-                    // TODO: An improved error diagnose might be needed here
-                    console.error("Bad server response!")
-                }
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data["HashCodeMatch"]) {
+                        this.hashCodeMatch = true
+                    } else if (data["FileYearMatch"]) {
+                        this.fileYearMatch = true
+                    } else if (data["UploadSuccessful"]) {
+                        this.uploadSuccess = true
+                    } else {
+                        // TODO: An improved error diagnose might be needed here
+                        console.error("Bad server response!")
+                    }
+                });
         },
-        /**
-        * This function overrides an older uploaded file
-        */
-        // TODO: Does this function even work?
-        overrideCsvYear() {
-
-            //DEBUG
-            console.log("***In overrideCsvYear***")
-
-            fetch("/Dashboard/OverrideCsvYear", {
-                    method: 'POST',
-                    body: this.formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data["FileUploaded"]) {
-                    alert("File has been overridden.");
-                    location.reload();
-                }
-            }).catch(error => {
-                    console.error('Error: ', error)
-            })
-        }
     },
     watch: {
         /**
@@ -290,16 +283,6 @@
                 alert("This file has already been uploaded.")
             }
             location.reload()
-        },
-        /**
-        * This watch function returns an error message when fileYearMatch is evaluated as true
-        * @param {boolean} value
-        */
-        fileYearMatch(value) {
-            if (value) {
-                // if the user agrees to override the current year, submit it to the server.
-                this.overrideDuplicate = confirm("There is a duplicate year. Do you want to override the file on the server?");
-            }
         },
         /**
         * This watch function calls the overrideCsvYear when overrideDuplicate is evaluated as true
@@ -322,6 +305,6 @@
                 location.reload();
             }
         }
-    }
+    },
 })
 

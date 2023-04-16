@@ -39,7 +39,6 @@ namespace CPH.Controllers
     //[Authorize]
     public class DashboardController : Controller
     {
-        private readonly IRegion _region;
 
         /// <summary>
         /// References the _hostEnv..
@@ -57,9 +56,8 @@ namespace CPH.Controllers
         /// <param name="logger">The logger<see cref="ILogger{DashboardController}"/>.</param>
         /// <param name="hostEnv">The hostEnv<see cref="IWebHostEnvironment"/>.</param>
         /// <param name="csvManagement">The csvManagement<see cref="ICSVManagement"/>.</param>
-        public DashboardController(IWebHostEnvironment hostEnv, ICSVManagement csvManagement, IRegion region)
+        public DashboardController(IWebHostEnvironment hostEnv, ICSVManagement csvManagement)
         {
-            _region = region;
             _hostEnv = hostEnv;
             _csvManagement = csvManagement;
         }
@@ -206,40 +204,6 @@ namespace CPH.Controllers
         public async Task<IActionResult> CSVYearDuplicateCheck(IFormFile csvYear)
         {
             return Json(_csvManagement.CheckIfYearExists(csvYear.FileName));
-        }
-
-        public IActionResult CreateRegion()
-        {
-            var filePath = _csvManagement.UploadsFolder;
-            string[] files = Directory.GetFiles(filePath);
-
-            string[] fileNames = new string[files.Length];
-
-            for (var i = 0; i < files.Length; i++)
-            {
-                fileNames[i] = (Path.GetFileNameWithoutExtension(files[i]));
-            }
-
-            ViewData["Files"] = fileNames;
-            return View();
-        }
-
-        [HttpPost, Route("Dashboard/SaveRegion")]
-        public async Task<IActionResult> SaveRegion([FromBody] Region region)
-        {
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var newRegion = await _region.Create(region);
-
-            return Ok(newRegion);
-        }
-
-        [HttpGet, Route("Dashboard/ReadAllRegions")]
-        public async Task<IActionResult> ReadAllRegions()
-        {
-            return Ok(await _region.ReadAll());
         }
 
         /// <summary>
