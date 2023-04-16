@@ -33,10 +33,6 @@
                     <input v-model="uploadDate" hidden id="UploadDate" value="@DateTime.Now" asp-for="UploadDate" class="form-control" />
                     <span asp-validation-for="UploadDate" class="text-danger"></span>
                 </div>
-
-                <!--REMOVE-->
-                <!-- Altered File Input -->
-                <!-- <input @@change="alteredCsv" id="AlteredFile" type="file" asp-for="AlteredFile" class="form-control" accept=".csv, .xlsx, .xlsm, .xlsb, .xls" hidden /> -->
                 
                 <!-- Original File Input -->
                 <div class="form-group">

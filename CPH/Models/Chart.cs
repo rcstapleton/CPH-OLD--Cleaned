@@ -14,7 +14,6 @@ namespace CPH.Models
         public int DataYear { get; set; }
         public string HealthIndicator { get; set; }
         public string Counties { get; set; } // a string list of county FIPS codes. Ex: 1000,1001,1002,1003.
-        public int? RegionId { get; set; }
         public string ChartDescription { get; set; }
         public DateTime CreationDateTime { get; set; } // Format 11/10/2020 08:30 pm
         public DateTime UpdatedDateTime { get; set; } // Format 11/10/2020 08:30 pm

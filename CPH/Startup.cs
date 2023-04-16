@@ -101,7 +101,6 @@ Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IChart, ChartRepo>();
             services.AddScoped<IStates, StatesRepo>();
-            services.AddScoped<IRegion, RegionRepo>();
 
         }
 
