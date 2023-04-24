@@ -198,7 +198,6 @@
                 // Removes the last the last item in the array
                 rows = this.removeTail(rows);
 
-
                 // Adds ratio columns to the dataset
                 this.calculatePercentage(rows);
 

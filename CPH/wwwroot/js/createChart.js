@@ -432,10 +432,16 @@ const ChartAttributes = new Vue({
 			await d3.csv(`../uploads/${year.target.value}.csv`)
 				.then((data) => {
 
+					// Removes the final column that is empty
+					data.columns.pop()
+
+					// Adds the data value to the global
 					this.fullRawData = data;
+
+					// Creates a county object
 					let counties = this.getCountyList(data);
 
-					// Add to the html list.
+					// Add to the html list
 					this.addDataToUL(data, data.columns, healthAttrs, "radio"); // data.columns are the health attributes from the csv file.
 					this.addDataToUL(data, counties, countiesDiv);
 				})
